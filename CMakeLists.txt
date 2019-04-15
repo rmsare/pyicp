@@ -42,7 +42,7 @@ add_library(lib/icp SHARED
 set_target_properties(lib/icp PROPERTIES 
 				PUBLIC_HEADER api/libicp.h)
 configure_file(libicp.pc.in libicp.pc @ONLY)
-target_include_directories(libicp PRIVATE .)
+target_include_directories(lib/icp PRIVATE .)
 install(TARGETS lib/icp
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
