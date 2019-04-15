@@ -1,6 +1,6 @@
 # project
 cmake_minimum_required (VERSION 2.6)
-project (libicp VERSION 1.0.1) 
+project (libicp ) 
 include(GNUInstallDirs)
 # directories
 set (LIBICP_SRC_DIR src)
