@@ -31,8 +31,10 @@ int main (int argc, char** argv) {
   // define a 3 dim problem with 10000 model points
   // and 10000 template points:
   int32_t dim = 3;
-  int32_t num = 10000;
+  int32_t num = 1000000;
 
+  double dd = 4.0 / sqrt(num);
+  cout << "dd: " << dd << endl;
   // allocate model and template memory
   double* M = (double*)calloc(3*num,sizeof(double));
   double* T = (double*)calloc(3*num,sizeof(double));
@@ -41,8 +43,8 @@ int main (int argc, char** argv) {
   cout << endl << "Creating model with 10000 points ..." << endl;
   cout << "Creating template by shifting model by (1,0.5,-1) ..." << endl;
   int32_t k=0;
-  for (double x=-2; x<2; x+=0.04) {
-    for (double y=-2; y<2; y+=0.04) {
+  for (double x=-2; x<2; x+=dd) {
+    for (double y=-2; y<2; y+=dd) {
       double z=5*x*exp(-x*x-y*y);
       M[k*3+0] = x;
       M[k*3+1] = y;
