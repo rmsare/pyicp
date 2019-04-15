@@ -29,6 +29,7 @@ FILE(GLOB LIBICP_SRC_FILES "src/*.cpp")
 
 # make release version
 set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 
 # build shared library
 add_library(icp STATIC 
