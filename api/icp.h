@@ -18,8 +18,8 @@ libicp; if not, write to the Free Software Foundation, Inc., 51 Franklin
 Street, Fifth Floor, Boston, MA 02110-1301, USA 
 */
 
-#ifndef LIBICP_H 
-#define LIBICP_H
+#ifndef ICP_H 
+#define ICP_H
 
 #include <stdio.h>
 #include <string.h>
@@ -134,4 +134,4 @@ private:
   double getResidual(double *T,const int32_t T_num,const Matrix &R,const Matrix &t,const std::vector<int> &active);
 };
 
-#endif // LIBICP_H
+#endif // ICP_H

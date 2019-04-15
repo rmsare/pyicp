@@ -1,14 +1,14 @@
 # project
 cmake_minimum_required (VERSION 2.6)
-project (libicp) 
+project (icp) 
 include(GNUInstallDirs)
 # directories
-set (LIBICP_SRC_DIR src)
-set (LIBICP_INCLUDE_DIR include)
+set (ICP_SRC_DIR src)
+set (ICP_INCLUDE_DIR include)
 FIND_PATH(BOOST_DIR "boost")
 
 # include directory
-include_directories("${LIBICP_INCLUDE_DIR}")
+include_directories("${ICP_INCLUDE_DIR}")
 include_directories("${BOOST_DIR}")
 
 # determine if OpenMP can/should be used
@@ -41,12 +41,12 @@ add_library(icp SHARED
 
 set_target_properties(icp PROPERTIES 
 				PUBLIC_HEADER api/libicp.h)
-configure_file(libicp.pc.in libicp.pc @ONLY)
+configure_file(icp.pc.in icp.pc @ONLY)
 target_include_directories(icp PRIVATE .)
 install(TARGETS icp
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(FILES ${CMAKE_BINARY_DIR}/libicp.pc
+install(FILES ${CMAKE_BINARY_DIR}/icp.pc
 	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
 
  
