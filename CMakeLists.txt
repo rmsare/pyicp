@@ -40,8 +40,6 @@ add_library(libicp SHARED
 )
 
 set_target_properties(libicp PROPERTIES 
-				VERSION ${PROJECT_VERSION}
-				SOVERSION 1
 				PUBLIC_HEADER api/libicp.h)
 configure_file(libicp.pc.in libicp.pc @ONLY)
 target_include_directories(libicp PRIVATE .)
