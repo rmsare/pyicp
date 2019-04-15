@@ -43,7 +43,7 @@ set_target_properties(icp PROPERTIES
 				PUBLIC_HEADER api/libicp.h)
 configure_file(libicp.pc.in libicp.pc @ONLY)
 target_include_directories(icp PRIVATE .)
-install(TARGETS libicp
+install(TARGETS icp
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(FILES ${CMAKE_BINARY_DIR}/libicp.pc
