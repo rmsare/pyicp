@@ -31,7 +31,7 @@ FILE(GLOB LIBICP_SRC_FILES "src/*.cpp")
 set(CMAKE_BUILD_TYPE Release)
 
 # build shared library
-add_library(lib/icp SHARED
+add_library(icp SHARED
 	    src/icp.cpp
 	    src/icpPointToPlane.cpp
 	    src/icpPointToPoint.cpp
@@ -39,11 +39,11 @@ add_library(lib/icp SHARED
 	    src/matrix.cpp
 )
 
-set_target_properties(lib/icp PROPERTIES 
+set_target_properties(icp PROPERTIES 
 				PUBLIC_HEADER api/libicp.h)
 configure_file(libicp.pc.in libicp.pc @ONLY)
-target_include_directories(lib/icp PRIVATE .)
-install(TARGETS lib/icp
+target_include_directories(icp PRIVATE .)
+install(TARGETS libicp
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(FILES ${CMAKE_BINARY_DIR}/libicp.pc
