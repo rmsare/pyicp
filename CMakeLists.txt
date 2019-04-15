@@ -1,6 +1,6 @@
 # project
 cmake_minimum_required (VERSION 2.6)
-project (libicp VERSION 1.0.1 DESCRIPTION "libicp Library to calculate iterative closest point")
+project (libicp VERSION 1.0.1) 
 include(GNUInstallDirs)
 # directories
 set (LIBICP_SRC_DIR src)
