@@ -22,7 +22,7 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA
 // Demo program showing how libicp can be used
 
 #include <iostream>
-#include "icpPointToPlane.h"
+#include "icp.h"
 
 using namespace std;
 
