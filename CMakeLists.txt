@@ -31,7 +31,7 @@ FILE(GLOB LIBICP_SRC_FILES "src/*.cpp")
 set(CMAKE_BUILD_TYPE Release)
 
 # build shared library
-add_library(icp SHARED
+add_library(icp STATIC 
 	    src/icp.cpp
 	    src/icpPointToPlane.cpp
 	    src/icpPointToPoint.cpp
