@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(pyicp)
 
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR}/cmake )
+
 find_package(PythonInterp)
 find_package(PythonLibs)
 
