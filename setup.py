@@ -65,5 +65,8 @@ setup(name = "pyicp",
       version = "1.0",
       ext_modules = [CMakeExtension("pyicp")],
       cmdclass = {'build_ext': cmake_build_ext},
-     );
+      packages=[''],
+      package_dir={'':'.'},
+      package_data={'':['pyicp.so']},
+)
 
