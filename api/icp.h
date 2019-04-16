@@ -21,10 +21,6 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA
 #ifndef ICP_H 
 #define ICP_H
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <iostream>
 #include <vector>
 
 #include "matrix.h"
