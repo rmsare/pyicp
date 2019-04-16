@@ -18,6 +18,7 @@ include_directories("${PYTHON_NUMPY_INCLUDE_DIR}")
 
 set_source_files_properties(pyicp.pyx PROPERTIES CYTHON_IS_CXX 1)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "../")
+set(CYTHON_FLAGS "-licp")
 
 cython_add_module(pyicp pyicp.pyx)
 
