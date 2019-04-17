@@ -1,7 +1,7 @@
 import numpy as np
 cimport pyicp
-from cpython.mem cimport PyMem_Malloc, PyMem_Free
 cimport numpy as np
+from libc.stdlib cimport malloc, free
 
 def icp(np.ndarray[double, ndim = 2, mode = 'c'] fixed not None, np.ndarray[double, ndim = 2, mode = 'c'] moving not None):
 
@@ -11,8 +11,8 @@ def icp(np.ndarray[double, ndim = 2, mode = 'c'] fixed not None, np.ndarray[doub
   assert n_fixed == 3
   assert n_moving == 3
 
-  cdef double *rotation = <double *> PyMem_Malloc(9*sizeof(double))
-  cdef double *translation = <double *> PyMem_Malloc(3*sizeof(double))
+  cdef double *rotation = <double *> malloc(9*sizeof(double))
+  cdef double *translation = <double *> malloc(3*sizeof(double))
 
   cdef double resid = pyicp(&fixed[0,0], m_fixed, &moving[0,0], m_moving, rotation, translation);
 
@@ -20,8 +20,8 @@ def icp(np.ndarray[double, ndim = 2, mode = 'c'] fixed not None, np.ndarray[doub
 
   residual = np.array([resid])
 
-  PyMem_Free(rotation)
-  PyMem_Free(translation)
+  free(rotation)
+  free(translation)
 
   return transform, residual
 

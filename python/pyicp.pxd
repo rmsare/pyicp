@@ -1,5 +1,6 @@
 # pyicp.pxd
 
 cdef extern from "pyicpp.h":
-    double pyicp(double *fixed, int num_fixed, double *moving, int num_moving, double *rotation, double *translation)
+    ctypedef signed int int32_t;
+    double pyicp(double *fixed, int32_t num_fixed, double *moving, int32_t num_moving, double *rotation, double *translation)
 
