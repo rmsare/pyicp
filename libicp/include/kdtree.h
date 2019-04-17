@@ -17,11 +17,11 @@
 
 namespace kdtree {
   
-  typedef boost::multi_array<float, 2>           KDTreeArray;
-  typedef boost::const_multi_array_ref<float, 2> KDTreeROArray;
+  typedef boost::multi_array<double, 2>           KDTreeArray;
+  typedef boost::const_multi_array_ref<double, 2> KDTreeROArray;
   
   typedef struct {
-    float lower, upper;
+    double lower, upper;
   } interval;
   
   // let the compiler know that this is a names of classes.
@@ -30,7 +30,7 @@ namespace kdtree {
   
   struct KDTreeResult {
   public:
-    float dis;  // square distance
+    double dis;  // square distance
     int idx;    // neighbor index
   };
   
@@ -47,9 +47,9 @@ namespace kdtree {
     // via std::vector<>
     
     void push_element_and_heapify(KDTreeResult&);
-    float replace_maxpri_elt_return_new_maxpri(KDTreeResult&);
+    double replace_maxpri_elt_return_new_maxpri(KDTreeResult&);
     
-    float max_value();
+    double max_value();
     // return the distance which has the maximum value of all on list,
     // assuming that ALL insertions were made by
     // push_element_and_heapify()
@@ -84,11 +84,11 @@ namespace kdtree {
     
   public:
     
-    void n_nearest_brute_force(std::vector<float>& qv, int nn, KDTreeResultVector& result);
+    void n_nearest_brute_force(std::vector<double>& qv, int nn, KDTreeResultVector& result);
     // search for n nearest to a given query vector 'qv' usin
     // exhaustive slow search.  For debugging, usually.
     
-    void n_nearest(std::vector<float>& qv, int nn, KDTreeResultVector& result);
+    void n_nearest(std::vector<double>& qv, int nn, KDTreeResultVector& result);
     // search for n nearest to a given query vector 'qv'.
     
     void n_nearest_around_point(int idxin, int correltime, int nn,
@@ -96,19 +96,19 @@ namespace kdtree {
     // search for 'nn' nearest to point [idxin] of the input data, excluding
     // neighbors within correltime
     
-    void r_nearest(std::vector<float>& qv, float r2, KDTreeResultVector& result);
+    void r_nearest(std::vector<double>& qv, double r2, KDTreeResultVector& result);
     // search for all neighbors in ball of size (square Euclidean distance)
     // r2. Return number of neighbors in 'result.size()',
     
-    void r_nearest_around_point(int idxin, int correltime, float r2,
+    void r_nearest_around_point(int idxin, int correltime, double r2,
             KDTreeResultVector& result);
     // like 'r_nearest', but around existing point, with decorrelation
     // interval.
     
-    int r_count(std::vector<float>& qv, float r2);
+    int r_count(std::vector<double>& qv, double r2);
     // count number of neighbors within square distance r2.
     
-    int r_count_around_point(int idxin, int correltime, float r2);
+    int r_count_around_point(int idxin, int correltime, double r2);
     // like r_count, c
     
     friend class KDTreeNode;
@@ -136,7 +136,7 @@ namespace kdtree {
     void build_tree(); // builds the tree.  Used upon construction.
     KDTreeNode* build_tree_for_range(int l, int u, KDTreeNode* parent);
     void select_on_coordinate(int c, int k, int l, int u);
-    int select_on_coordinate_value(int c, float alpha, int l, int u);
+    int select_on_coordinate_value(int c, double alpha, int l, int u);
     void spread_in_coordinate(int c, int l, int u, interval& interv);
   };
   
@@ -150,7 +150,7 @@ namespace kdtree {
     friend class KDTree;  // allow kdtree to access private data
     
     int cut_dim;                                 // dimension to cut;
-    float cut_val, cut_val_left, cut_val_right;  //cut value
+    double cut_val, cut_val_left, cut_val_right;  //cut value
     int l, u;  // extents in index array for searching
     
     std::vector<interval> box; // [min,max] of the box enclosing all points

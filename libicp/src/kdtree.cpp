@@ -11,10 +11,12 @@
 #include <algorithm>
 #include <iostream>
 
+using namespace std;
+
 namespace kdtree {
 // utility
   
-  inline float squared(const float x) {
+  inline double squared(const double x) {
     return(x*x);
   }
   
@@ -25,8 +27,8 @@ namespace kdtree {
     b = tmp;
   }
   
-  inline void swap(float& a, float&b) {
-    float tmp;
+  inline void swap(double& a, double& b) {
+    double tmp;
     tmp = a;
     a = b;
     b = tmp;
@@ -42,7 +44,7 @@ namespace kdtree {
   //
   //       KDTREE2_RESULT_VECTOR implementation
   //
-  float KDTreeResultVector::max_value() {
+  double KDTreeResultVector::max_value() {
     return( (*begin()).dis ); // very first element
   }
   
@@ -51,7 +53,7 @@ namespace kdtree {
     push_heap( begin(), end() ); // and now heapify it, with the new elt.
   }
   
-  float KDTreeResultVector::replace_maxpri_elt_return_new_maxpri(KDTreeResult& e) {
+  double KDTreeResultVector::replace_maxpri_elt_return_new_maxpri(KDTreeResult& e) {
     // remove the maximum priority element on the queue and replace it
     // with 'e', and return its priority.
     //
@@ -84,9 +86,9 @@ namespace kdtree {
     //
     if (dim_in > 0)
       dim = dim_in;
-    
+
     build_tree();
-    
+
     if (rearrange) {
       // if we have a rearranged tree.
       // allocate the memory for it.
@@ -151,83 +153,100 @@ namespace kdtree {
       // That, we recompute ourself.
       //
       int c = -1;
-      float maxspread = 0.0;
+      double maxspread = 0.0;
       int m;
       
       for (int i=0;i<dim;i++) {
         if ((parent == NULL) || (parent->cut_dim == i)) {
           spread_in_coordinate(i, l, u, node->box[i]);
+          if (node->box[i].upper == node->box[i].lower)
+	    node->box[i].upper = node->box[i].upper;
         } else {
           node->box[i] = parent->box[i];
         }
-        float spread = node->box[i].upper - node->box[i].lower;
+        double spread = node->box[i].upper - node->box[i].lower;
         if (spread>maxspread) {
           maxspread = spread;
           c=i;
         }
       }
+     
+      if (c != -1) {
+ 
+        //
+        // now, c is the identity of which coordinate has the greatest spread
+        //
       
-      //
-      // now, c is the identity of which coordinate has the greatest spread
-      //
-      
-      if (false) {
-        m = (l+u)/2;
-        select_on_coordinate(c, m, l, u);
-      } else {
-        float sum;
-        float average;
-        
-        if (true) {
-          sum = 0.0;
-          for (int k=l; k <= u; k++) {
-            sum += the_data[ind[k]][c];
-          }
-          average = sum / static_cast<float> (u-l+1);
+        if (false) {
+          m = (l+u)/2;
+          select_on_coordinate(c, m, l, u);
         } else {
-          // average of top and bottom nodes.
-          average = (node->box[c].upper + node->box[c].lower)*0.5F;
-        }
+          double sum;
+          double average;
         
-        m = select_on_coordinate_value(c, average, l, u);
-      }
+          if (true) {
+            sum = 0.0;
+            for (int k=l; k <= u; k++) {
+              if (c < 0 || c > 2)
+		c = c;
+              sum += the_data[ind[k]][c];
+            }  
+            average = sum / static_cast<double> (u-l+1);
+          } else {
+            // average of top and bottom nodes.
+            average = (node->box[c].upper + node->box[c].lower)*0.5F;
+          }
+        
+          m = select_on_coordinate_value(c, average, l, u);
+        }
       
       
-      // move the indices around to cut on dim 'c'.
-      node->cut_dim=c;
-      node->l = l;
-      node->u = u;
+        // move the indices around to cut on dim 'c'.
+        node->cut_dim=c;
+        node->l = l;
+        node->u = u;
       
-      node->left = build_tree_for_range(l, m, node);
-      node->right = build_tree_for_range(m+1, u, node);
+        node->left = build_tree_for_range(l, m, node);
+        node->right = build_tree_for_range(m+1, u, node);
       
-      if (node->right == NULL) {
-        for (int i=0; i<dim; i++)
-          node->box[i] = node->left->box[i];
-        node->cut_val = node->left->box[c].upper;
-        node->cut_val_left = node->cut_val_right = node->cut_val;
-      } else if (node->left == NULL) {
-        for (int i=0; i<dim; i++)
-          node->box[i] = node->right->box[i];
-        node->cut_val =  node->right->box[c].upper;
-        node->cut_val_left = node->cut_val_right = node->cut_val;
-      } else {
-        node->cut_val_right = node->right->box[c].lower;
-        node->cut_val_left  = node->left->box[c].upper;
-        node->cut_val = (node->cut_val_left + node->cut_val_right) / 2.0F;
-        //
-        // now recompute true bounding box as union of subtree boxes.
-        // This is now faster having built the tree, being logarithmic in
-        // N, not linear as would be from naive method.
-        //
-        for (int i=0; i<dim; i++) {
-          node->box[i].upper = std::max(node->left->box[i].upper,
+        if (node->right == NULL) {
+          for (int i=0; i<dim; i++)
+            node->box[i] = node->left->box[i];
+          node->cut_val = node->left->box[c].upper;
+          node->cut_val_left = node->cut_val_right = node->cut_val;
+        } else if (node->left == NULL) {
+          for (int i=0; i<dim; i++)
+            node->box[i] = node->right->box[i];
+          node->cut_val =  node->right->box[c].upper;
+          node->cut_val_left = node->cut_val_right = node->cut_val;
+        } else {
+          node->cut_val_right = node->right->box[c].lower;
+          node->cut_val_left  = node->left->box[c].upper;
+          node->cut_val = (node->cut_val_left + node->cut_val_right) / 2.0F;
+          //
+          // now recompute true bounding box as union of subtree boxes.
+          // This is now faster having built the tree, being logarithmic in
+          // N, not linear as would be from naive method.
+          //
+          for (int i=0; i<dim; i++) {
+            node->box[i].upper = std::max(node->left->box[i].upper,
                   node->right->box[i].upper);
           
-          node->box[i].lower = std::min(node->left->box[i].lower,
+            node->box[i].lower = std::min(node->left->box[i].lower,
                   node->right->box[i].lower);
-        }
+          }
+        }  
+      } else {
+        //create terminal node
+	//possibly repeated points: bounding box --> one point
+	//maxspread = 0
+	node->cut_dim = 0;
+	node->cut_val = 0.0;
+	node->l = l;
+	node->u = u;
+	node->left = node->right = NULL;
       }
+
     }
     return(node);
   }
@@ -236,8 +255,8 @@ namespace kdtree {
     // return the minimum and maximum of the indexed data between l and u in
     // smin_out and smax_out.
     
-    float smin, smax;
-    float lmin, lmax;
+    double smin, smax;
+    double lmin, lmax;
     int i;
     
     smin = the_data[ind[l]][c];
@@ -250,7 +269,7 @@ namespace kdtree {
       
       if (lmin > lmax) {
         swap(lmin, lmax);
-        //      float t = lmin;
+        //      double t = lmin;
         //      lmin = lmax;
         //      lmax = t;
       }
@@ -260,7 +279,7 @@ namespace kdtree {
     }
     // is there one more element?
     if (i == u+1) {
-      float last = the_data[ind[u]] [c];
+      double last = the_data[ind[u]] [c];
       if (smin>last) smin = last;
       if (smax<last) smax = last;
     }
@@ -291,7 +310,7 @@ namespace kdtree {
     } // while loop
   }
   
-  int KDTree::select_on_coordinate_value(int c, float alpha, int l, int u) {
+  int KDTree::select_on_coordinate_value(int c, double alpha, int l, int u) {
     //
     //  Move indices in ind[l..u] so that the elements in [l .. return]
     //  are <= alpha, and hence are less than the [return+1..u]
@@ -322,7 +341,7 @@ namespace kdtree {
   // this holds useful information to be used
   // during the search
   
-  static const float infinity = 1.0e38F;
+  static const double infinity = 1.0e38F;
   
   class SearchRecord {
     
@@ -330,11 +349,11 @@ namespace kdtree {
     friend class KDTree;
     friend class KDTreeNode;
     
-    std::vector<float>& qv;
+    std::vector<double>& qv;
     int dim;
     bool rearrange;
     unsigned int nn; // , nfound;
-    float ballsize;
+    double ballsize;
     int centeridx, correltime;
     
     KDTreeResultVector& result;  // results
@@ -343,7 +362,7 @@ namespace kdtree {
     // constructor
     
   public:
-    SearchRecord(std::vector<float>& qv_in, KDTree& tree_in,
+    SearchRecord(std::vector<double>& qv_in, KDTree& tree_in,
             KDTreeResultVector& result_in) :
               qv(qv_in),
                       result(result_in),
@@ -357,12 +376,12 @@ namespace kdtree {
               
   };
   
-  void KDTree::n_nearest_brute_force(std::vector<float>& qv, int nn, KDTreeResultVector& result) {
+  void KDTree::n_nearest_brute_force(std::vector<double>& qv, int nn, KDTreeResultVector& result) {
     
     result.clear();
     
     for (int i=0; i<N; i++) {
-      float dis = 0.0;
+      double dis = 0.0;
       KDTreeResult e;
       for (int j=0; j<dim; j++) {
         dis += squared( the_data[i][j] - qv[j]);
@@ -375,9 +394,9 @@ namespace kdtree {
   }
   
   
-  void KDTree::n_nearest(std::vector<float>& qv, int nn, KDTreeResultVector& result) {
+  void KDTree::n_nearest(std::vector<double>& qv, int nn, KDTreeResultVector& result) {
     SearchRecord sr(qv, *this, result);
-    std::vector<float> vdiff(dim, 0.0);
+    std::vector<double> vdiff(dim, 0.0);
     
     result.clear();
     
@@ -393,7 +412,7 @@ namespace kdtree {
   void KDTree::n_nearest_around_point(int idxin, int correltime, int nn,
           KDTreeResultVector& result) {
     
-    std::vector<float> qv(dim); //  query vector
+    std::vector<double> qv(dim); //  query vector
     result.clear();
     for (int i=0; i<dim; i++) {
       qv[i] = the_data[idxin][i];
@@ -413,10 +432,10 @@ namespace kdtree {
   }
   
   
-  void KDTree::r_nearest(std::vector<float>& qv, float r2, KDTreeResultVector& result) {
+  void KDTree::r_nearest(std::vector<double>& qv, double r2, KDTreeResultVector& result) {
   // search for all within a ball of a certain radius
     SearchRecord sr(qv, *this, result);
-    std::vector<float> vdiff(dim, 0.0);
+    std::vector<double> vdiff(dim, 0.0);
     
     result.clear();
     
@@ -430,7 +449,7 @@ namespace kdtree {
     if (sort_results) sort(result.begin(), result.end());
   }
   
-  int KDTree::r_count(std::vector<float>& qv, float r2) {
+  int KDTree::r_count(std::vector<double>& qv, double r2) {
   // search for all within a ball of a certain radius
     {
       KDTreeResultVector result;
@@ -446,9 +465,9 @@ namespace kdtree {
     }
   }
   
-  void KDTree::r_nearest_around_point(int idxin, int correltime, float r2,
+  void KDTree::r_nearest_around_point(int idxin, int correltime, double r2,
           KDTreeResultVector& result) {
-    std::vector<float> qv(dim);  //  query vector
+    std::vector<double> qv(dim);  //  query vector
     
     result.clear();
     
@@ -469,8 +488,8 @@ namespace kdtree {
     if (sort_results) sort(result.begin(), result.end());
   }
   
-  int KDTree::r_count_around_point(int idxin, int correltime, float r2) {
-    std::vector<float> qv(dim);  //  query vector
+  int KDTree::r_count_around_point(int idxin, int correltime, double r2) {
+    std::vector<double> qv(dim);  //  query vector
     
     for (int i=0; i<dim; i++) {
       qv[i] = the_data[idxin][i];
@@ -532,8 +551,8 @@ namespace kdtree {
     } else {
       KDTreeNode *ncloser, *nfarther;
       
-      float extra;
-      float qval = sr.qv[cut_dim];
+      double extra;
+      double qval = sr.qv[cut_dim];
       // value of the wall boundary on the cut dimension.
       if (qval < cut_val) {
         ncloser = left;
@@ -556,7 +575,7 @@ namespace kdtree {
     }
   }
 
-  inline float dis_from_bnd(float x, float amin, float amax) {
+  inline double dis_from_bnd(double x, double amin, double amax) {
     if (x > amax) {
       return(x-amax);
     } else if (x < amin)
@@ -570,8 +589,8 @@ namespace kdtree {
     // have any point which is within 'sr.ballsize' to 'sr.qv'??
     
     int dim = sr.dim;
-    float dis2 =0.0;
-    float ballsize = sr.ballsize;
+    double dis2 =0.0;
+    double ballsize = sr.ballsize;
     for (int i=0; i<dim;i++) {
       dis2 += squared(dis_from_bnd(sr.qv[i], box[i].lower, box[i].upper));
       if (dis2 > ballsize)
@@ -585,7 +604,7 @@ namespace kdtree {
     int correltime = sr.correltime;
     unsigned int nn = sr.nn;
     int dim        = sr.dim;
-    float ballsize = sr.ballsize;
+    double ballsize = sr.ballsize;
     //
     bool rearrange = sr.rearrange;
     const KDTreeArray& data = *sr.data;
@@ -603,7 +622,7 @@ namespace kdtree {
     
     for (int i=l; i<=u;i++) {
       int indexofi;  // sr.ind[i];
-      float dis;
+      double dis;
       bool early_exit;
       
       if (rearrange) {
@@ -686,14 +705,14 @@ namespace kdtree {
     int centeridx  = sr.centeridx;
     int correltime = sr.correltime;
     int dim        = sr.dim;
-    float ballsize = sr.ballsize;
+    double ballsize = sr.ballsize;
     //
     bool rearrange = sr.rearrange;
     const KDTreeArray& data = *sr.data;
     
     for (int i=l; i<=u;i++) {
       int indexofi = sr.ind[i];
-      float dis;
+      double dis;
       bool early_exit;
       
       if (rearrange) {

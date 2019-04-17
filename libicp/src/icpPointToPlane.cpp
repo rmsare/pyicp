@@ -54,15 +54,15 @@ double IcpPointToPlane::fitStep (double *T,const int32_t T_num,Matrix &R,Matrix 
 #pragma omp parallel for private(i) default(none) shared(T,active,nact,p_m,p_t,A,b,r00,r01,r10,r11,t0,t1) // schedule (dynamic,2)
     for (i=0; i<nact; i++) {
       // kd tree query + result
-      std::vector<float>         query(m_dim);
+      std::vector<double>         query(m_dim);
       kdtree::KDTreeResultVector result;
 
       // get index of active point
       int32_t idx = active[i];
 
       // transform point according to R|t
-      query[0] = (float)(r00*T[idx*2+0] + r01*T[idx*2+1] + t0);
-      query[1] = (float)(r10*T[idx*2+0] + r11*T[idx*2+1] + t1);
+      query[0] = (r00*T[idx*2+0] + r01*T[idx*2+1] + t0);
+      query[1] = (r10*T[idx*2+0] + r11*T[idx*2+1] + t1);
 
       // search nearest neighbor
       m_kd_tree->n_nearest(query,1,result);
@@ -139,16 +139,16 @@ double IcpPointToPlane::fitStep (double *T,const int32_t T_num,Matrix &R,Matrix 
 #pragma omp parallel for private(i) default(none) shared(T,active,nact,p_m,p_t,A,b,r00,r01,r02,r10,r11,r12,r20,r21,r22,t0,t1,t2) // schedule (dynamic,2)
     for (i=0; i<nact; i++) {
       // kd tree query + result
-      std::vector<float>         query(m_dim);
+      std::vector<double>         query(m_dim);
       kdtree::KDTreeResultVector result;
 
       // get index of active point
       int32_t idx = active[i];
 
       // transform point according to R|t
-      query[0] = (float)(r00*T[idx*3+0] + r01*T[idx*3+1] + r02*T[idx*3+2] + t0);
-      query[1] = (float)(r10*T[idx*3+0] + r11*T[idx*3+1] + r12*T[idx*3+2] + t1);
-      query[2] = (float)(r20*T[idx*3+0] + r21*T[idx*3+1] + r22*T[idx*3+2] + t2);
+      query[0] = (r00*T[idx*3+0] + r01*T[idx*3+1] + r02*T[idx*3+2] + t0);
+      query[1] = (r10*T[idx*3+0] + r11*T[idx*3+1] + r12*T[idx*3+2] + t1);
+      query[2] = (r20*T[idx*3+0] + r21*T[idx*3+1] + r22*T[idx*3+2] + t2);
 
       // search nearest neighbor
       m_kd_tree->n_nearest(query,1,result);
@@ -227,7 +227,7 @@ std::vector<int32_t> IcpPointToPlane::getInliers (double *T,const int32_t T_num,
   
   // init inlier vector + query point + query result
   vector<int32_t>            inliers;
-  std::vector<float>         query(m_dim);
+  std::vector<double>         query(m_dim);
   kdtree::KDTreeResultVector neighbor;
   
   // dimensionality 2
@@ -242,8 +242,8 @@ std::vector<int32_t> IcpPointToPlane::getInliers (double *T,const int32_t T_num,
     for (int32_t i=0; i<T_num; i++) {
 
       // transform point according to R|t
-      double sx = r00*T[i*2+0] + r01*T[i*2+1] + t0; query[0] = (float)sx;
-      double sy = r10*T[i*2+0] + r11*T[i*2+1] + t1; query[1] = (float)sy;
+      double sx = r00*T[i*2+0] + r01*T[i*2+1] + t0; query[0] = sx;
+      double sy = r10*T[i*2+0] + r11*T[i*2+1] + t1; query[1] = sy;
 
       // search nearest neighbor
       m_kd_tree->n_nearest(query,1,neighbor);
@@ -274,9 +274,9 @@ std::vector<int32_t> IcpPointToPlane::getInliers (double *T,const int32_t T_num,
     for (int32_t i=0; i<T_num; i++) {
 
       // transform point according to R|t
-      double sx = r00*T[i*3+0] + r01*T[i*3+1] + r02*T[i*3+2] + t0; query[0] = (float)sx;
-      double sy = r10*T[i*3+0] + r11*T[i*3+1] + r12*T[i*3+2] + t1; query[1] = (float)sy;
-      double sz = r20*T[i*3+0] + r21*T[i*3+1] + r22*T[i*3+2] + t2; query[2] = (float)sz;
+      double sx = r00*T[i*3+0] + r01*T[i*3+1] + r02*T[i*3+2] + t0; query[0] = sx;
+      double sy = r10*T[i*3+0] + r11*T[i*3+1] + r12*T[i*3+2] + t1; query[1] = sy;
+      double sz = r20*T[i*3+0] + r21*T[i*3+1] + r22*T[i*3+2] + t2; query[2] = sz;
 
       // search nearest neighbor
       m_kd_tree->n_nearest(query,1,neighbor);
@@ -383,7 +383,7 @@ double IcpPointToPlane::getResidual( double *T,const int32_t T_num,const Matrix 
 	int nact = active.size();
 	double residual = 0;
 
-	std::vector<float>         query(m_dim);
+	std::vector<double>         query(m_dim);
 	kdtree::KDTreeResultVector result;
 
 	if (m_dim==2) {
@@ -398,8 +398,8 @@ double IcpPointToPlane::getResidual( double *T,const int32_t T_num,const Matrix 
 			// transform point according to R|t
 			double tx = r00*T[idx*2+0] + r01*T[idx*2+1] + t0;
 			double ty = r10*T[idx*2+0] + r11*T[idx*2+1] + t1;
-			query[0] = (float)tx;
-			query[1] = (float)ty;
+			query[0] = tx;
+			query[1] = ty;
 
 			// search nearest neighbor
 			m_kd_tree->n_nearest(query,1,result);
@@ -422,7 +422,7 @@ double IcpPointToPlane::getResidual( double *T,const int32_t T_num,const Matrix 
 		double t0  = t.val[0][0]; double t1  = t.val[1][0]; double t2  = t.val[2][0];
 		for (int32_t i=0; i<nact; i++) {
 			// kd tree query + result
-			std::vector<float>         query(m_dim);
+			std::vector<double>         query(m_dim);
 			kdtree::KDTreeResultVector result;
 			// get index of active point
 			int32_t idx = active[i];
@@ -430,9 +430,9 @@ double IcpPointToPlane::getResidual( double *T,const int32_t T_num,const Matrix 
 			double tx = r00*T[idx*3+0] + r01*T[idx*3+1] + r02*T[idx*3+2] + t0;
 			double ty = r10*T[idx*3+0] + r11*T[idx*3+1] + r12*T[idx*3+2] + t1;
 			double tz = r20*T[idx*3+0] + r21*T[idx*3+1] + r22*T[idx*3+2] + t2;
-			query[0] = (float)tx;
-			query[1] = (float)ty;
-			query[2] = (float)tz;
+			query[0] = tx;
+			query[1] = ty;
+			query[2] = tz;
 			// search nearest neighbor
 			m_kd_tree->n_nearest(query,1,result);
 			//
