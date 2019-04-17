@@ -1,5 +1,7 @@
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
+from distutils.core import setup, Extension
+from distutils.command.build_ext import build_ext
+from distutils.dist import Distribution
+
 import os
 import subprocess
 import platform
@@ -64,9 +66,10 @@ class cmake_build_ext(build_ext):
 setup(name = "pyicp",
       version = "1.0",
       ext_modules = [CMakeExtension("pyicp")],
-      cmdclass = {'build_ext': cmake_build_ext},
-      packages=[''],
-      package_dir={'':'.'},
-      package_data={'':['pyicp.so']},
+      cmdclass = {'build_ext': cmake_build_ext,
+		 },
+      packages=['.'],
+      ext_package='.',
+      package_dir = {'':'.'},
 )
 
