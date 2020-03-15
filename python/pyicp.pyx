@@ -1,9 +1,13 @@
 import numpy as np
+import copy
 cimport pyicp
 cimport numpy as np
 from libc.stdlib cimport malloc, free
 
 def icp(np.ndarray[double, ndim = 2, mode = 'c'] fixed not None, np.ndarray[double, ndim = 2, mode = 'c'] moving not None):
+
+  fixed = copy.deepcopy(fixed)
+  moving = copy.deepcopy(moving)
 
   m_fixed, n_fixed = fixed.shape[0], fixed.shape[1]
   m_moving, n_moving = moving.shape[0], moving.shape[1]
