@@ -17,7 +17,7 @@ include_directories("${BOOST_DIR}")
 include_directories("${PYTHON_NUMPY_INCLUDE_DIR}")
 include_directories("./")
 
-set_source_files_properties(pyicp.pyx PROPERTIES CYTHON_IS_CXX 1)
-cython_add_module(pyicp pyicp.pyx pyicpp.cpp)
-target_link_libraries(pyicp icp)
+set_source_files_properties(pylibicp.pyx PROPERTIES CYTHON_IS_CXX 1)
+cython_add_module(pylibicp pylibicp.pyx pyicpp.cpp)
+target_link_libraries(pylibicp icp)
 
