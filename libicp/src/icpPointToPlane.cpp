@@ -136,7 +136,6 @@ double IcpPointToPlane::fitStep (double *T,const int32_t T_num,Matrix &R,Matrix 
     Matrix b(nact,1);
 
     // establish correspondences
-#pragma omp parallel for private(i) default(none) shared(T,active,nact,p_m,p_t,A,b,r00,r01,r02,r10,r11,r12,r20,r21,r22,t0,t1,t2) // schedule (dynamic,2)
     for (i=0; i<nact; i++) {
       // kd tree query + result
       std::vector<double>         query(m_dim);
