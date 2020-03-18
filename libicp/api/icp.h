@@ -15,10 +15,10 @@ PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with
 libicp; if not, write to the Free Software Foundation, Inc., 51 Franklin
-Street, Fifth Floor, Boston, MA 02110-1301, USA 
+Street, Fifth Floor, Boston, MA 02110-1301, USA
 */
 
-#ifndef ICP_H 
+#ifndef ICP_H
 #define ICP_H
 
 #include <vector>
@@ -63,7 +63,7 @@ public:
 	//         t ....... final translation vector
 	double fit(double *T,const int32_t T_num,Matrix &R,Matrix &t,double indist=-1);
 
-  
+
 private:
 	// iterative fitting
 	void fitIterate(double *T,const int32_t T_num,Matrix &R,Matrix &t, double indist = -1);
@@ -71,11 +71,11 @@ private:
 	// inherited classes need to overwrite these functions
 	virtual double               fitStep(double *T,const int32_t T_num,Matrix &R,Matrix &t,const std::vector<int32_t> &active) = 0;
 	virtual std::vector<int32_t> getInliers(double *T,const int32_t T_num,const Matrix &R,const Matrix &t,const double indist) = 0;
-	
+
 	virtual double getResidual(double *T,const int32_t T_num,const Matrix &R,const Matrix &t,const std::vector<int> &active)=0;
-  
+
 protected:
-  
+
 	// kd tree of model points
 	kdtree::KDTree*     m_kd_tree;
 	kdtree::KDTreeArray m_kd_data;
@@ -83,8 +83,9 @@ protected:
 	int32_t m_dim;       // dimensionality of model + template data (2 or 3)
 	int32_t m_max_iter;  // max number of iterations
 	double  m_min_delta; // min parameter delta
+	double  m_max_delta; // max parameter delta
 
-	std::vector<int>	m_active; //inliers 
+	std::vector<int>	m_active; //inliers
 
 	double	m_inlier_ratio;  // active.size()/ T_num
 	double  m_residual;      // residual of icp
@@ -94,7 +95,7 @@ protected:
 class IcpPointToPlane : public Icp {
 
 public:
-  
+
   IcpPointToPlane (double *M,const int32_t M_num,const int32_t dim,const int32_t num_neighbors=10,const double flatness=5.0) : Icp(M,M_num,dim) {
     M_normal = computeNormals(num_neighbors,flatness);
   }

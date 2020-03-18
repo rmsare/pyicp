@@ -15,17 +15,17 @@ PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with
 libicp; if not, write to the Free Software Foundation, Inc., 51 Franklin
-Street, Fifth Floor, Boston, MA 02110-1301, USA 
+Street, Fifth Floor, Boston, MA 02110-1301, USA
 */
 
 #include "icp.h"
 #include <iostream>
 using namespace std;
 
-Icp::Icp (double *M,const int32_t M_num,const int32_t dim) 
-:m_dim(dim), m_max_iter(200), m_min_delta(1e-4) 
+Icp::Icp (double *M,const int32_t M_num,const int32_t dim)
+:m_dim(dim), m_max_iter(200), m_min_delta(1e-4), m_max_delta(1e15)
 {
-  
+
 	// check for correct dimensionality
 	if (dim!=2 && dim!=3) {
 		cout << "ERROR: LIBICP works only for data of dimensionality 2 or 3" << endl;
@@ -41,7 +41,7 @@ Icp::Icp (double *M,const int32_t M_num,const int32_t dim)
 
 	// copy model points to M_data
 	m_kd_data.resize(boost::extents[M_num][dim]);
-	
+
         for (int32_t m=0; m<M_num; m++)
 		for (int32_t n=0; n<dim; n++)
 		  m_kd_data[m][n] = M[m*dim+n];
@@ -98,7 +98,7 @@ void Icp::fitIterate( double *T,const int32_t T_num,Matrix &R,Matrix &t, double 
 	}
 	double delta = 1000;
 	int32_t iter;
-	for(iter=0; iter<m_max_iter && delta>m_min_delta; iter++){
+	for(iter=0; iter<m_max_iter && delta>m_min_delta && delta<m_max_delta; iter++){
 		if(indist>0){
 			indist = std::max(indist*0.9,0.05);
 			m_active = getInliers(T,T_num,R,t,indist);
